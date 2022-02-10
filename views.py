@@ -1,3 +1,4 @@
+from young_framework.templator import render
 
 
 class Index:
@@ -15,5 +16,5 @@ class Contact:
 class Page:
     def __call__(self, request):
         return '200 OK', render(
-            'contact.html', date=request.get('date', None))
+            'page.html', date=request.get('date', None))
 
