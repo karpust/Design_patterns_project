@@ -1,7 +1,7 @@
 
 class PageNotFound404:
     def __call__(self, request):
-        return '404', '404 - Page not found'
+        return '404', '404 - Page not found'  # WHAT
 
 
 class Framework:
@@ -17,7 +17,7 @@ class Framework:
         # адрес по которому перешли:
         path = environ['PATH_INFO']
 
-        # добавление слэша в конце:
+        # добавление слэша в конце если забыли:
         if not path.endswith('/'):
             path = f'{path}/'
 
