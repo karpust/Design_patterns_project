@@ -15,7 +15,7 @@ fronts = [front_1, front_2]
 
 routes = {
     '/': Index(),
-    '/page/': Page(),
+    '/about/': Page(),
     '/contact/': Contact(),
 }
 

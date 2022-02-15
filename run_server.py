@@ -4,7 +4,8 @@ from urls import routes, fronts
 
 
 application = Framework(routes, fronts)
+port = int(input("Укажите порт: "))
 
-with make_server('', 8000, application) as httpd:
-    print('Server is running on a port 8080...')
+with make_server('', port, application) as httpd:
+    print(f'Server is running on a port {port}...')
     httpd.serve_forever()
