@@ -77,11 +77,11 @@ class Framework:
             request['method'] = method
 
             if method == 'POST':
-                data = PostRequests().get_request_params(environ)
+                data = PostRequests.get_request_params(environ)
                 request['data'] = Framework.decode_value(data)
                 print(f'поступил post-запрос: {Framework.decode_value(data)}')
             elif method == 'GET':
-                request_params = GetRequests().get_request_params(environ)
+                request_params = GetRequests.get_request_params(environ)
                 request['request_params'] = Framework.decode_value(request_params)
                 print(f'поступили get-параметры: '
                       f'{Framework.decode_value(request_params)}')
