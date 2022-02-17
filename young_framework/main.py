@@ -1,6 +1,6 @@
 import os
 import sys
-from young_framework.requests import GetRequests, Postrequests
+from young_framework.requests import GetRequests, PostRequests
 from quopri import decodestring
 
 sys.path.append('../')
@@ -77,7 +77,7 @@ class Framework:
             request['method'] = method
 
             if method == 'POST':
-                data = Postrequests().get_request_params(environ)
+                data = PostRequests().get_request_params(environ)
                 request['data'] = Framework.decode_value(data)
                 print(f'поступил post-запрос: {Framework.decode_value(data)}')
             elif method == 'GET':
@@ -96,6 +96,9 @@ class Framework:
 
     @staticmethod
     def decode_value(data):
+        """
+        возвращает словарь с декодированными значениями
+        """
         new_data = {}
         for k, v in data.items():
             val = bytes(v.replace('%', '=').replace('+', ' '), 'UTF-8')
