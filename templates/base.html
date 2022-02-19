@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% block inc_head %}
+        {% include 'inc_head.html' %}
+    {% endblock inc_head %}
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+<div id="main">
+  <div id="header">
+    <div id="logo">
+      <div id="logo_text">
+        {% block inc_logo_text %}
+          {% include 'inc_logo_text.html' %}
+        {% endblock %}
+      </div>
+    </div>
+    {% block menu %}
+    {% include 'inc_menu.html' %}
+    {% endblock %}
+  </div>
+  <div id="site_content">
+    {% block sidebar %}
+    {% include 'inc_sidebar.html' %}
+    {% endblock %}
+    <div id="content">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </div>
+  {% block footer %}
+  {% include 'inc_footer.html' %}
+  {% endblock footer %}
+</div>
+</body>
+</html>

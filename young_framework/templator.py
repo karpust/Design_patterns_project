@@ -1,8 +1,12 @@
-from jinja2 import Template
+from jinja2 import FileSystemLoader
+from jinja2.environment import Environment
 
 
-def render(template_name, **kwargs):
-    template_path = f'templates/{template_name}'
-    with open(template_path, encoding='utf-8') as t:
-        template = Template(t.read())
+def render(template_name, folder='templates', **kwargs):
+    # создаем объект окружения:
+    env = Environment()
+    # откуда загружать шаблоны:
+    env.loader = FileSystemLoader(folder)
+    # находим шаблон в окружении:
+    template = env.get_template(template_name)
     return template.render(**kwargs)

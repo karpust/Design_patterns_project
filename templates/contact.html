@@ -1,79 +1,21 @@
-<!DOCTYPE HTML>
-<html lang="en">
+{% extends 'base.html' %}
+{% set active_page = 'contact' %}
 
-<head>
-  <meta charset="UTF-8">
-  <link rel="shortcut icon" href="https://www.kino-teatr.ru/favicon.ico">
-  <title>Снежный скоробей - наши контакты</title>
-  <meta name="description" content="website description" />
-  <meta name="keywords" content="website keywords, website keywords" />
-  <meta http-equiv="content-type" content="text/html; charset=windows-1252" />
-  <link rel="stylesheet" href="../static/css/style.css">
-</head>
+{% block title %}Снежный скоробей - контакты{% endblock %}
 
-<body>
-  <div id="main">
-    <div id="header">
-      <div id="logo">
-        <div id="logo_text">
-          <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="/">Катайся<span class="logo_colour">Зимой</span></a></h1>
-          <h2>Магазин зимних товаров для детей и не только</h2>
-        </div>
-      </div>
-      <div id="menubar">
-        <ul id="menu">
-          <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
-          <li><a href="/">Home</a></li>
-          <li><a href="/about/">About</a></li>
-          <li class="selected"><a href="/contact/">Contact Us</a></li>
-        </ul>
-      </div>
-    </div>
-    <div id="site_content">
-    <div class="sidebar">
-      <h1>Последние новости</h1>
-      <h4>Мы создали новое нечто!</h4>
-      <h5>Сегодня {{date}}</h5>
-      <p>Новая модель снегоката позволяет кататься втроем и вчетвером. Но подготовиться нужно заранее. Воздержитесь от еды и колы в течение недели чтобы у вас все получилось!<br /><a href="#">Read more</a></p>
-      <h1>Как будем кататься?</h1>
-      <ul>
-        <li><a href="#">Стоя</a></li>
-        <li><a href="#">Лежа</a></li>
-        <li><a href="#">Сидя</a></li>
-        <li><a href="#">Кувырком</a></li>
-        <li><a href="#">Не катаюсь вообще</a></li>
-      </ul>
-      <h1>Search</h1>
-        <form method="post" action="#" id="search_form">
-          <p>
-            <input class="search" type="text" name="search_field" value="Что ищем?....." />
-            <input name="search" type="image" style="border: 0; margin: 0 0 -9px 5px;" src="/static/images/search.png"
-                 alt="Search" title="Search" />
-
-          </p>
-        </form>
-      </div>
-      <div id="content">
-        <h1>
-          Написать нам
-        </h1>
-        <p>Используй форму ниже чтобы связаться с нами:</p>
-        <form action="#" method="post">
-          <div class="form_settings">
-            <p><span>Имя</span><input class="contact" type="text" name="your_name" value="" /></p>
-            <p><span>Email Address</span><input class="contact" type="text" name="your_email" value="" /></p>
-            <p><span>Сообщение</span><textarea class="contact textarea" rows="8" cols="50" name="your_enquiry"></textarea></p>
-            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="submit" /></p>
-          </div>
-        </form>
-        <p><br /><br />ПРИМЕЧАНИЕ. Контактная форма, подобная этой, потребует отправки ввода по электронной почте на адрес электронной почты.</p>
-      </div>
-    </div>
-    <div id="footer">
-      <p><a href="/">Home</a> | <a href="/about/">A Page</a> | <a href="/contact/">Contact Us</a></p>
-      <p>Copyright &copy; Снежный скоробей {{date.year}}
-    </div>
+{% block content %}
+<h1>
+  Написать нам
+</h1>
+<p>Используй форму ниже чтобы связаться с нами:</p>
+<form action="#" method="post">
+  <div class="form_settings">
+    <p><span>Имя</span><input class="contact" type="text" name="your_name" value="" /></p>
+    <p><span>Email Address</span><input class="contact" type="text" name="your_email" value="" /></p>
+    <p><span>Сообщение</span><textarea class="contact textarea" rows="8" cols="50" name="your_enquiry"></textarea></p>
+    <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="submit" /></p>
   </div>
-</body>
-</html>
+</form>
+<p><br /><br />ПРИМЕЧАНИЕ. Контактная форма, подобная этой, потребует отправки ввода по электронной почте на адрес электронной почты.</p>
+{% endblock %}
+

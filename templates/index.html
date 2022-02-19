@@ -1,75 +1,22 @@
-<!DOCTYPE HTML>
-<html lang="en">
+{% extends 'base.html' %}
+{% set active_page = "index" %}
 
-<head>
-  <meta charset="UTF-8">
-  <link rel="shortcut icon" href="https://www.kino-teatr.ru/favicon.ico">
-  <title>Снежный скоробей</title>
-  <meta name="description" content="website description" />
-  <meta name="keywords" content="website keywords, website keywords" />
-  <meta http-equiv="content-type" content="text/html; charset=windows-1252" />
-  <link rel="stylesheet" href="../static/css/style.css">
-</head>
+{% block title %}Снежный скоробей{% endblock title %}
 
-<body>
-<div id="main">
-  <div id="header">
-    <div id="logo">
-      <div id="logo_text">
-        <!-- class="logo_colour", allows you to change the colour of the text -->
-        <h1><a href="/">Катайся<span class="logo_colour">Зимой</span></a></h1>
-        <h2>Магазин зимних товаров для детей и не только</h2>
-      </div>
-    </div>
-    <div id="menubar">
-      <ul id="menu">
-        <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
-        <li class="selected"><a href="/">Home</a></li>
-        <li><a href="/about/">About</a></li>
-        <li><a href="/contact/">Contact Us</a></li>
-      </ul>
-    </div>
-  </div>
-  <div id="site_content">
-    <div class="sidebar">
-      <h1>Последние новости</h1>
-      <h4>Мы создали новое нечто!</h4>
-      <h5>Сегодня {{date}}</h5>
-      <p>Новая модель снегоката позволяет кататься втроем и вчетвером. Но подготовиться нужно заранее. Воздержитесь от еды и колы в течение недели чтобы у вас все получилось!<br /><a href="#">Read more</a></p>
-      <h1>Как будем кататься?</h1>
-      <ul>
-        <li><a href="#">Стоя</a></li>
-        <li><a href="#">Лежа</a></li>
-        <li><a href="#">Сидя</a></li>
-        <li><a href="#">Кувырком</a></li>
-        <li><a href="#">Не катаюсь вообще</a></li>
-      </ul>
-      <h1>Search</h1>
-      <form method="post" action="#" id="search_form">
-        <p>
-          <input class="search" type="text" name="search_field" value="Что ищем?....." />
-          <input name="search" type="image" style="border: 0; margin: 0 0 -9px 5px;" src="/static/images/search.png"
-                 alt="Search" title="Search" />
-        </p>
-      </form>
-    </div>
-    <div id="content">
-      <h1>Добро пожаловать в наш магазин зимних развлекательных товаров!</h1>
-      <p>В нашем классном магазине можно купить что угодно! Разные санки, снегокаты, лыжи и коньки. Можешь приходить один, а можешь взять всю свою веселую компанию и завалиться к нам! Ты молод и активен - насладжайся этим ведь однажды все это закончится и ты станешь взрослым вросшим в стул окоченелым программистом!  </p>
-      <p>Если ты готов к подвигам, тогда вперед! <strong>Катайся из последних сил!!!</strong> поддерживай форму - у нас мало больших размеров</p>
-      <h2>Катайся даже если никто не хочет кататься с тобой! Покажи как ты крут на самом деле!!!</h2>
-      <p>Для того чтобы кататься, нужно всего три особенности:</p>
-      <ul>
-        <li>Не быть трусишкой</li>
-        <li>Быть достаточно крутым</li>
-        <li>Быть сильным и классным</li>
-      </ul>
-    </div>
-  </div>
-  <div id="footer">
-    <p><a href="/">Home</a> | <a href="/about/">A Page</a> | <a href="/contact/">Contact Us</a></p>
-    <p>Copyright &copy; Снежный скоробей {{date.year}}
-  </div>
-</div>
-</body>
-</html>
+
+{% block content %}
+<h1>Добро пожаловать в наш магазин зимних развлекательных товаров!</h1>
+<p>В нашем классном магазине можно купить что угодно! Разные санки, снегокаты, лыжи и коньки.
+  Можешь приходить один, а можешь взять всю свою веселую компанию и завалиться к нам!
+  Ты молод и активен - насладжайся этим ведь однажды все это закончится и ты станешь
+  взрослым вросшим в стул окоченелым программистом!  </p>
+<p>Если ты готов к подвигам, тогда вперед!
+  <strong>Катайся из последних сил!!!</strong> поддерживай форму - у нас мало больших размеров</p>
+<h2>Катайся даже если никто не хочет кататься с тобой! Покажи как ты крут на самом деле!!!</h2>
+<p>Для того чтобы кататься, нужно всего три особенности:</p>
+<ul>
+  <li>Не быть трусишкой</li>
+  <li>Быть достаточно крутым</li>
+  <li>Быть сильным и классным</li>
+</ul>
+{% endblock %}
