@@ -18,7 +18,7 @@ file_types = {
 
 class PageNotFound404:
     def __call__(self, request):
-        return '404', '404 - Page not found'  # WHAT
+        return '404 WHAT', '404 - Page not found'
 
 
 class Framework:
