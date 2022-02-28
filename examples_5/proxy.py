@@ -1,5 +1,13 @@
 from abc import ABCMeta, abstractmethod
 
+"""
+Заместитель (прокси)
+«Позволяет сослаться на объект более изощрённо, 
+чем это возможно с простым указателем»
+
+
+"""
+
 
 class CurrencyRateService(metaclass=ABCMeta):
     @abstractmethod
