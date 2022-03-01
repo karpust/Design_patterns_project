@@ -1,10 +1,14 @@
 from young_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
+from patterns.structural_patterns import AppRoute
 
 site = Engine()
 logger = Logger('main')
+routes = {}  # декоратор AppRoute заполняет словарь
+# при запуске, еще до вызова контроллеров
 
 
+@AppRoute(routes=routes, url='/')
 class Index:
     """
     контроллер - главная
@@ -14,6 +18,7 @@ class Index:
             'index.html', date=request.get('date', None))
 
 
+@AppRoute(routes=routes, url='/contact/')
 class Contact:
     """
     контроллер - контакты
@@ -24,6 +29,7 @@ class Contact:
             date=request.get('date', None))
 
 
+@AppRoute(routes=routes, url='/about/')
 class About:
     """
     контроллер - о проекте
@@ -41,6 +47,7 @@ class NotFound404:
         return '404 WHAT', '404 Page Not Found'
 
 
+@AppRoute(routes=routes, url='/category_list/')
 class CategoryList:
     """
     контроллер - список категорий
@@ -52,6 +59,7 @@ class CategoryList:
                                 date=request.get('date', None))
 
 
+@AppRoute(routes=routes, url='/create_category/')
 class CreateCategory:
     """
     контроллер - создание категории
@@ -85,6 +93,7 @@ class CreateCategory:
                                     date=request.get('date', None))
 
 
+@AppRoute(routes=routes, url='/product_list/')
 class ProductList:
     def __call__(self, request):
         logger.log('Список товаров')
@@ -98,6 +107,7 @@ class ProductList:
             return '200 OK', 'No products have been added yet'
 
 
+@AppRoute(routes=routes, url='/create_product/')
 class CreateProduct:
     """
     контроллер - создание продукта
@@ -140,6 +150,7 @@ class CreateProduct:
                 return '200 OK', 'No categories have been added yet'
 
 
+@AppRoute(routes=routes, url='/copy_product/')
 class CopyProduct:
     """
     контроллер - копирование товара
