@@ -30,8 +30,9 @@ class Debug:
                 start = time()
                 res = method(*args, **kwargs)
                 end = time()
-                time = end - start
-                print(f'debug --> {self.name} completed in time {time:2.2f} ms')
+                lead_time = end - start
+                print(f'debug --> {self.name} completed in time {lead_time:2.2f} ms')
                 return res
             return timed
         return timeit(cls)
+

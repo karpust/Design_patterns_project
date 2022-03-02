@@ -1,6 +1,6 @@
 from young_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
-from patterns.structural_patterns import AppRoute
+from patterns.structural_patterns import AppRoute, Debug
 
 site = Engine()
 logger = Logger('main')
@@ -13,6 +13,7 @@ class Index:
     """
     контроллер - главная
     """
+    @Debug(name='Index')
     def __call__(self, request):
         return '200 OK', render(
             'index.html', date=request.get('date', None))
@@ -23,6 +24,7 @@ class Contact:
     """
     контроллер - контакты
     """
+    @Debug(name='Contact')
     def __call__(self, request):
         return '200 OK', render(
             'contact.html',
@@ -34,6 +36,7 @@ class About:
     """
     контроллер - о проекте
     """
+    @Debug(name='About')
     def __call__(self, request):
         return '200 OK', render(
             'about.html', date=request.get('date', None))
@@ -43,6 +46,7 @@ class NotFound404:
     """
     контроллер - страница не найдена
     """
+    @Debug(name='NotFound404')
     def __call__(self, request):
         return '404 WHAT', '404 Page Not Found'
 

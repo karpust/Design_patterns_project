@@ -1,7 +1,7 @@
 from wsgiref.simple_server import make_server
 from young_framework.main import Framework
-from urls import routes, fronts
-
+from urls import fronts
+from views import routes
 
 application = Framework(routes, fronts)
 # port = int(input("Укажите порт: "))
