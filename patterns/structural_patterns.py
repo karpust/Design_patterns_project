@@ -16,6 +16,7 @@ class AppRoute:
 # структурный паттерн - Декоратор:
 
 
+
 class Debug:
     def __init__(self, name):
         self.name = name
