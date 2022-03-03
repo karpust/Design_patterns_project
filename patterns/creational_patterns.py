@@ -1,5 +1,39 @@
 from copy import deepcopy
 from quopri import decodestring
+from behavioral_patterns import Subject
+
+
+# """
+# в магазине представлены следующие виды товаров:
+# лыжи (размер ноги, ростовка, тип катания, жесткость)
+# коньки (размер ноги, тип катания, заводская заточка)
+#
+# снегокаты (кол-во мест, вес, размер)
+# ватрушки (кол-во мест)
+# ледянки
+#
+# сноуборды (технология, тип катания)
+#
+# кальсоны с начесом(размер)
+# маска медведя(размер головы)
+# валенки(материал, размер ноги)
+# """
+
+
+class User:
+    """
+    класс - абстрактный пользователь
+    """
+    def __init__(self, name):
+        self.name = name
+
+
+class Customer(User):
+    """
+    класс - покупатель
+    """
+    def __init__(self, name):
+        super().__init__(name)
 
 
 class PrototipeProduct:
@@ -11,24 +45,7 @@ class PrototipeProduct:
         return deepcopy(self)
 
 
-"""
-в магазине представлены следующие виды товаров:
-лыжи (размер ноги, ростовка, тип катания, жесткость)
-коньки (размер ноги, тип катания, заводская заточка)
-
-снегокаты (кол-во мест, вес, размер)
-ватрушки (кол-во мест)
-ледянки 
-
-сноуборды (технология, тип катания)
-
-кальсоны с начесом(размер)
-маска медведя(размер головы)
-валенки(материал, размер ноги)
-"""
-
-
-class Product(PrototipeProduct):
+class Product(PrototipeProduct, Subject):
     """
     класс товара
     у любого товара есть:
@@ -37,6 +54,7 @@ class Product(PrototipeProduct):
     категория к которой он относится
     """
     def __init__(self, name, category):  # firm, country, color, price, vendorcode,
+        super().__init__()
         self.name = name
         # self.firm = firm
         # self.country = country
@@ -44,7 +62,20 @@ class Product(PrototipeProduct):
         # self.price = price
         # self.vendorcode = vendorcode
         self.category = category
+        self.new_products = []
         self.category.products.append(self)
+
+    def __getitem__(self, item):
+        return self.new_products[item]
+
+    def add_product(self, product: __class__):
+        self.category.products.append(self)
+        self.new_products.append(product)
+        self.notify()
+
+
+# курс фиксирует появление нового студента
+#      фиксирует появление нового товара
 
 
 class Skiing(Product):

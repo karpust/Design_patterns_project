@@ -1,11 +1,14 @@
 from young_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
+from patterns.behavioral_patterns import EmailNotifier, SmsNotifier
 
 site = Engine()
 logger = Logger('main')
 routes = {}  # декоратор AppRoute заполняет словарь
 # при запуске, еще до вызова контроллеров
+email_notifier = EmailNotifier()
+sms_notifier = SmsNotifier()
 
 
 @AppRoute(routes=routes, url='/')
@@ -133,7 +136,11 @@ class CreateProduct:
                     pass
                 # если нет - создаем:
                 else:
-                    new_product = site.create_product('begginer', name, category) # категорию ручками?
+                    new_product = site.create_product('begginer', name, category)
+
+                    # добавим нотификаторы для покупателей о появлении нового товара:
+                    new_product.observers.append(email_notifier)
+                    new_product.observers.append(sms_notifier)
                     site.products.append(new_product)
             return '200 OK', render('product_list.html',
                                     objects_list=site.products,
