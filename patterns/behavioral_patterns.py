@@ -9,19 +9,17 @@ class Subject:  # товары за которыми следят покупат
     класс-предмет наблюдения
     """
     def __init__(self):
-        # список покупателей, которые будут уведомлены
-        # при появлении нового товара:
-        self.observers = []
+        self.observers = []  # наблюдатели
 
     def notify(self):
-        for item in self.observers:
-            item.update(self)  # It automatically converts into a set and adds to the set.
+        for item in self.observers:  # наблюдатели
+            item.update(self)
 
 
 class Observer(metaclass=ABCMeta):
     """
     класс-интерфейс
-    уведомитель
+    наблюдателя
     """
     @abstractmethod
     def update(self, subject):  # уведомление

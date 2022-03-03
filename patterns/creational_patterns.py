@@ -69,7 +69,6 @@ class Product(PrototipeProduct, Subject):
         return self.new_products[item]
 
     def add_product(self, product: __class__):
-        self.category.products.append(self)
         self.new_products.append(product)
         self.notify()
 
@@ -175,7 +174,7 @@ class Category:
         Category.id += 1
         self.name = name
         self.parent_category = parent_category
-        self.products = []
+        self.products = []  # продукты категории
 
     def count_products(self):
         """
@@ -211,7 +210,7 @@ class Engine:
                 return item
             raise Exception(f'No category with id = {id}')
 
-    # найти курс по имени:
+    # найти товар по имени:
     def find_product(self, name):
         for item in self.products:
             if item.name == name:

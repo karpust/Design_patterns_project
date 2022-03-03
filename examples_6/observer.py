@@ -19,11 +19,11 @@ class Subject:  # группа вк
         self._observers = set()
         self._subject_state = None
 
-    def attach(self, observer):  # добавить в группу
-        observer._subject = self
+    def attach(self, observer):  # добавить observer это нотифаер
+        observer._subject = self  # кого наблюдает
         self._observers.add(observer)
 
-    def detach(self, observer):  # убрать из группы
+    def detach(self, observer):
         observer._subject = None
         self._observers.discard(observer)
 

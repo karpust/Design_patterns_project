@@ -137,6 +137,7 @@ class CreateProduct:
                 # если нет - создаем:
                 else:
                     new_product = site.create_product('begginer', name, category)
+
                     # добавим нотификаторы для покупателей о появлении нового товара:
                     new_product.observers.append(email_notifier)
                     new_product.observers.append(sms_notifier)
