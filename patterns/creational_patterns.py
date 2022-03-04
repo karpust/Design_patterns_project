@@ -1,6 +1,7 @@
 from copy import deepcopy
 from quopri import decodestring
-from behavioral_patterns import Subject
+from patterns.behavioral_patterns import Subject
+#
 
 
 # """
@@ -34,6 +35,7 @@ class Customer(User):
     """
     def __init__(self, name):
         super().__init__(name)
+        self.new_products = []
 
 
 class PrototipeProduct:
@@ -62,19 +64,21 @@ class Product(PrototipeProduct, Subject):
         # self.price = price
         # self.vendorcode = vendorcode
         self.category = category
-        self.new_products = []
         self.category.products.append(self)
 
-    def __getitem__(self, item):
-        return self.new_products[item]
+        # состояние о товарах на которые подписан пользователь(на все):
+        self.sub_products = []
 
-    def add_product(self, product: __class__):
-        self.new_products.append(product)
+    def __getitem__(self, item):
+        return self.sub_products[item]
+
+    def add_product(self, product):  # появление нового товара
+        self.sub_products.append(product)
         self.notify()
 
 
 # курс фиксирует появление нового студента
-#      фиксирует появление нового товара
+# покупатель фиксирует появление нового товара
 
 
 class Skiing(Product):
@@ -246,9 +250,13 @@ class SingletonByName(type):
 
 
 class Logger(metaclass=SingletonByName):
-    def __init__(self, name):
+    def __init__(self, name, writer):
         self.name = name
+        self.writer = writer
 
-    @staticmethod
-    def log(text):
+    def log(self, text):
+        """
+        логгирование в файл и в консоль
+        """
+        self.writer.write(text)
         print('log--->', text)

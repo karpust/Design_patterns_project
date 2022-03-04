@@ -1,10 +1,12 @@
 from young_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
-from patterns.behavioral_patterns import EmailNotifier, SmsNotifier
+from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, \
+    BaseSerializer, FileWriter, ConsoleWriter
 
 site = Engine()
-logger = Logger('main')
+# стратегия: взаимозаменяемые алгоритмы FileWriter() или ConsoleWriter():
+logger = Logger('main', FileWriter())
 routes = {}  # декоратор AppRoute заполняет словарь
 # при запуске, еще до вызова контроллеров
 email_notifier = EmailNotifier()
@@ -138,9 +140,10 @@ class CreateProduct:
                 else:
                     new_product = site.create_product('begginer', name, category)
 
-                    # добавим нотификаторы для покупателей о появлении нового товара:
-                    new_product.observers.append(email_notifier)
+                    # добавим нотификаторы о появлении нового товара:
+                    new_product.observers.append(email_notifier)  # добавить в модель add_product
                     new_product.observers.append(sms_notifier)
+
                     site.products.append(new_product)
             return '200 OK', render('product_list.html',
                                     objects_list=site.products,
@@ -185,3 +188,10 @@ class CopyProduct:
                                     date=request.get('date', None))
         except KeyError:
             return '200 OK', 'No products have been added yet'
+
+
+@AppRoute(routes=routes, url='/api/')
+class ProductApi:
+    @Debug(name='ProductApi')
+    def __call__(self, request):
+        return '200 OK', BaseSerializer(site.products).save()
