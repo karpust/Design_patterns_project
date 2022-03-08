@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Список покупателей
+{% endblock title %}
+
+
+{% block content %}
+
+    <div>
+        <h1>Список покупателей</h1>
+    </div>
+    <div>
+        <ul>
+            {% for item in objects_list %}
+                <li>
+                    {{item.name}}
+                    {% for product in item.products %}
+                        {{product.name}}
+                    {% endfor %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div>
+        <ul>
+            <li>
+                <a href="/create_buyer/">Создать покупателя</a>
+            </li>
+            <li>
+                <a href="/add_buyer/">Добавить покупателя товара</a>
+            </li>
+        </ul>
+    </div>
+{% endblock content %}

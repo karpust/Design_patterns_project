@@ -9,7 +9,7 @@ class Subject:  # следим за появлением новых товаро
     класс-предмет наблюдения
     """
     def __init__(self):
-        self.observers = []  # наблюдатели/нотифаеры
+        self.observers = []  # уведомители
 
     def notify(self):
         for item in self.observers:
@@ -33,7 +33,7 @@ class SmsNotifier(Observer):
     о появлении нового товара
     """
     def update(self, subject):
-        print('SMS: появился новый товар', subject.products[-1].name)
+        print('SMS: у товара появился новый покупатель', subject.buyers[-1].name)
 
 
 class EmailNotifier(Observer):
@@ -43,7 +43,7 @@ class EmailNotifier(Observer):
     о появлении нового товара
     """
     def update(self, subject):
-        print('Email: появился новый товар', subject.products[-1].name)
+        print('Email: у товара появился новый покупатель', subject.buyers[-1].name)
 
 
 # поведенческий паттерн Хранитель:
@@ -118,7 +118,7 @@ class ListView(TemplateView):
     context_object_name = 'objects_list'
 
     def get_queryset(self):
-        print(self.queryset)
+        print(f'queryset = {self.queryset}')
         return self.queryset
 
     def get_context_object_name(self):
@@ -132,6 +132,10 @@ class ListView(TemplateView):
 
 
 class CreateView(TemplateView):
+    """
+    класс - представление
+    создания объекта
+    """
     template_name = 'create.html'
 
     @staticmethod
@@ -139,6 +143,7 @@ class CreateView(TemplateView):
         return request['data']
 
     def create_obj(self, data):
+        # при создании переопределим
         pass
 
     def __call__(self, request):

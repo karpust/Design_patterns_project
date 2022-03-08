@@ -2,7 +2,9 @@ from young_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, \
-    BaseSerializer, FileWriter, ConsoleWriter
+    BaseSerializer, FileWriter, ConsoleWriter, CreateView, TemplateView, \
+    ListView
+
 
 site = Engine()
 # стратегия: взаимозаменяемые алгоритмы FileWriter() или ConsoleWriter():
@@ -116,6 +118,20 @@ class ProductList:
             return '200 OK', 'No products have been added yet'
 
 
+@AppRoute(routes=routes, url='/create_buyer/')
+class CreateBuyer:
+    """
+    контроллер - создание покупателя
+    """
+    def __call__(self, request):
+        if request['method'] == 'POST':
+            data = request['data']
+            name = data['name']
+            name = site.decode_value(name)
+            new_buyer = site.create_user('buyer', name)
+            site.buyers.append(new_buyer)
+
+
 @AppRoute(routes=routes, url='/create_product/')
 class CreateProduct:
     """
@@ -140,8 +156,8 @@ class CreateProduct:
                 else:
                     new_product = site.create_product('begginer', name, category)
 
-                    # добавим нотификаторы о появлении нового товара:
-                    new_product.observers.append(email_notifier)  # добавить в модель add_product
+                    # добавим нотификаторы о покупке товара:
+                    new_product.observers.append(email_notifier)
                     new_product.observers.append(sms_notifier)
 
                     site.products.append(new_product)
@@ -195,3 +211,43 @@ class ProductApi:
     @Debug(name='ProductApi')
     def __call__(self, request):
         return '200 OK', BaseSerializer(site.products).save()
+
+
+@AppRoute(routes=routes, url='/create_buyer/')
+class BuyerCreateView(CreateView):
+    template_name = 'create_buyer.html'
+
+    def create_obj(self, data: dict):
+        name = data['name']
+        name = site.decode_value(name)
+        new_obj = site.create_user('buyer', name)
+        site.buyers.append(new_obj)
+
+
+@AppRoute(routes=routes, url='/buyers_list/')
+class BuyersListView(ListView):
+    queryset = site.buyers
+    template_name = 'buyers_list.html'
+
+
+@AppRoute(routes=routes, url='/add_buyer/')
+class AddBuyerCreateView(CreateView):
+    template_name = 'add_buyer.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['products'] = site.products
+        context['buyers'] = site.buyers
+        return context
+
+    def create_obj(self, data: dict):
+        product_name = data['product_name']
+        product_name = site.decode_value(product_name)
+        product = site.get_product(product_name)
+        buyer_name = data['buyer_name']
+        buyer_name = site.decode_value(buyer_name)
+        buyer = site.get_buyer(buyer_name)
+        product.add_buyer(buyer)
+
+
+

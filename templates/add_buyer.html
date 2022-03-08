@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Добавить покупателя
+{% endblock title %}
+
+
+{% block content %}
+
+    <div>
+        <h1>Добавление покупателя к товару</h1>
+    </div>
+    <div>
+        <form method="post">
+            <select size="10" name="product_name">
+                {% for item in products %}
+                    <option value="{{item.name}}">{{item.name}}</option>
+                {% endfor %}
+            </select>
+            <select size="10" name="buyer_name">
+                {% for item in buyers %}
+                    <option value="{{item.name}}">{{item.name}}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Добавить</button>
+        </form>
+
+
+    </div>
+    <div>
+        <ul>
+            <li>
+                <a href="/create_buyer/">Создать покупателя</a>
+            </li>
+            <li>
+                <a href="/buyers_list/">Список покупателей</a>
+            </li>
+        </ul>
+    </div>
+{% endblock content %}

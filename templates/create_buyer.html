@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Создание покупателя
+{% endblock title %}
+
+
+{% block content %}
+    <div>
+        <h1>Создание нового покупателя</h1>
+    </div>
+
+
+    <div>
+        <ul>
+            <li>
+                <a href="/buyers_list/">Список покупателей</a>
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        <form method="post">
+            <input type="text" name="name" placeholder="Name">
+            <button type="submit">Save</button>
+        </form>
+    </div>
+{% endblock content %}

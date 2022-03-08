@@ -29,13 +29,28 @@ class User:
         self.name = name
 
 
-class Customer(User):
+class Seller(User):
+    pass
+
+
+class Buyer(User):
     """
     класс - покупатель
     """
     def __init__(self, name):
         super().__init__(name)
-        self.new_products = []
+        self.products = []
+
+
+class UserFactory:
+    types = {
+        'buyer': Buyer,
+        'seller': Seller
+    }
+
+    @classmethod
+    def create(cls, type_, name):
+        return cls.types[type_](name)
 
 
 class PrototipeProduct:
@@ -67,13 +82,13 @@ class Product(PrototipeProduct, Subject):
         self.category.products.append(self)
 
         # состояние о товарах на которые подписан пользователь(на все):
-        self.sub_products = []
+        self.buyers = []
 
     def __getitem__(self, item):
-        return self.sub_products[item]
+        return self.buyers[item]
 
-    def add_product(self, product):  # появление нового товара
-        self.sub_products.append(product)
+    def add_buyer(self, buyer: Buyer):  # кто купил товар
+        self.buyers.append(buyer)
         self.notify()
 
 
@@ -196,11 +211,29 @@ class Engine:
     def __init__(self):
         self.products = []
         self.categories = []
+        self.buyers = []
 
     # создаем продукт:
     @staticmethod
     def create_product(type_, name, category):
         return ProductLevelFactory.create(type_, name, category)
+
+    # выбираем продукт:
+    def get_product(self, name) -> Product:
+        for item in self.products:
+            if item.name == name:
+                return item
+
+    # выбираем покупателя:
+    def get_buyer(self, name) -> Buyer:
+        for item in self.buyers:
+            if item.name == name:
+                return item
+
+    # создаем пользователя:
+    @staticmethod
+    def create_user(type_, name):
+        return UserFactory.create(type_, name)
 
     # создаем категорию:
     @staticmethod
