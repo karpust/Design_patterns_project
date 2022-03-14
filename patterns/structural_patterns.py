@@ -1,8 +1,7 @@
 from time import time
 
+
 # структурный паттерн - Декоратор:
-
-
 class AppRoute:
     def __init__(self, routes, url):
         self.routes = routes
@@ -14,8 +13,6 @@ class AppRoute:
 
 
 # структурный паттерн - Декоратор:
-
-
 class Debug:
     def __init__(self, name):
         self.name = name

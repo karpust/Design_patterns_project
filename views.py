@@ -1,9 +1,10 @@
 from young_framework.templator import render
-from patterns.creational_patterns import Engine, Logger
+from patterns.creational_patterns import Engine, Logger, MapperRegistry
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, \
     BaseSerializer, FileWriter, ConsoleWriter, CreateView, TemplateView, \
     ListView
+from patterns.architectural_system_pattern_unit_of_work import UnitOfWork
 
 
 site = Engine()
@@ -13,6 +14,9 @@ routes = {}  # декоратор AppRoute заполняет словарь
 # при запуске, еще до вызова контроллеров
 email_notifier = EmailNotifier()
 sms_notifier = SmsNotifier()
+
+UnitOfWork.new_current()  # создаем сессию работы с БД
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 
 @AppRoute(routes=routes, url='/')
@@ -222,12 +226,19 @@ class BuyerCreateView(CreateView):
         name = site.decode_value(name)
         new_obj = site.create_user('buyer', name)
         site.buyers.append(new_obj)
+        # внесение изменений в бд:
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 
 @AppRoute(routes=routes, url='/buyers_list/')
 class BuyersListView(ListView):
-    queryset = site.buyers
+    # queryset = site.buyers
     template_name = 'buyers_list.html'
+
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('buyer')
+        return mapper.all()
 
 
 @AppRoute(routes=routes, url='/add_buyer/')

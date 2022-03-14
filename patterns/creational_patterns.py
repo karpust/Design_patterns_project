@@ -1,24 +1,11 @@
 from copy import deepcopy
 from quopri import decodestring
 from patterns.behavioral_patterns import Subject
-#
+from patterns.architectural_system_pattern_unit_of_work import DomainObject
+from sqlite3 import connect
 
 
-# """
-# в магазине представлены следующие виды товаров:
-# лыжи (размер ноги, ростовка, тип катания, жесткость)
-# коньки (размер ноги, тип катания, заводская заточка)
-#
-# снегокаты (кол-во мест, вес, размер)
-# ватрушки (кол-во мест)
-# ледянки
-#
-# сноуборды (технология, тип катания)
-#
-# кальсоны с начесом(размер)
-# маска медведя(размер головы)
-# валенки(материал, размер ноги)
-# """
+connection = connect('patterns.sqlite')  # открывает соединение с файлом бд
 
 
 class User:
@@ -33,7 +20,7 @@ class Seller(User):
     pass
 
 
-class Buyer(User):
+class Buyer(User, DomainObject):
     """
     класс - покупатель
     """
@@ -73,11 +60,6 @@ class Product(PrototipeProduct, Subject):
     def __init__(self, name, category):  # firm, country, color, price, vendorcode,
         super().__init__()
         self.name = name
-        # self.firm = firm
-        # self.country = country
-        # self.color = color
-        # self.price = price
-        # self.vendorcode = vendorcode
         self.category = category
         self.category.products.append(self)
 
@@ -92,49 +74,11 @@ class Product(PrototipeProduct, Subject):
         self.notify()
 
 
-# курс фиксирует появление нового студента
-# покупатель фиксирует появление нового товара
-
-
 class Skiing(Product):
     pass
-    # def __init__(self, foot_size, type_rid, height, hardness,
-    #              name, firm, country, color,
-    #              price, vendorcode, category
-    #              ):
-    #     super().__init__(name, firm, country, color,
-    #                      price, vendorcode,  category)
-    #     self.foot_size = foot_size
-    #     self.type_rid = type_rid
-    #     self.height = height
-    #     self.hardness = hardness
 
 
 class Skates(Product):
-    pass
-
-
-class SnowScooters(Product):
-    pass
-
-
-class Tubing(Product):
-    pass
-
-
-class Sledge(Product):
-    pass
-
-
-class Snowboards(Product):
-    pass
-
-
-class Pants(Product):
-    pass
-
-
-class BearMask(Product):
     pass
 
 
@@ -142,12 +86,6 @@ class ProductFactory:
     types = {
         'skiing': Skiing,
         'skates': Skates,
-        'snow scooters': SnowScooters,
-        'tubing': Tubing,
-        'sledge': Sledge,
-        'snowboards': Snowboards,
-        'pants': Pants,
-        'bear mask': BearMask
     }
 
     @classmethod
@@ -293,3 +231,112 @@ class Logger(metaclass=SingletonByName):
         """
         self.writer.write(text)
         print('log--->', text)
+
+
+# паттерн Преобразователь данных - Data Mapper
+# транслирует команды в SQL
+# методы этого класса принимают объект модели и
+# через него выполняют операции по изменению БД
+# Слой преобразования данных:
+class BuyerMapper:
+    def __init__(self, connection):
+        self.connection = connection
+        self.cursor = connection.cursor()
+        self.tablename = 'buyer'
+
+    def all(self):
+        statement = f'SELECT * FROM {self.tablename}'
+        self.cursor.execute(statement)
+        result = []
+        for item in self.cursor.fetchall():
+            id, name = item
+            buyer = Buyer(name)
+            buyer.id = id
+            result.append(buyer)
+        return result
+
+    def find_by_id(self, id):
+        statement = f'SELECT id, name FROM {self.tablename} WHERE id=?'
+        self.cursor.execute(statement, (id, ))
+        result = self.cursor.fetcheall()
+        if result:
+            return Buyer(*result)
+        else:
+            raise RecordNotFoundExeption(f'record with id={id}'
+                                         f'not found')
+
+    def insert(self, obj):
+        statement = f'INSERT INTO {self.tablename} (name) VALUES (?)'
+        self.cursor.execute(statement, (obj.name, ))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbCommitExeption(e.args)
+
+    def update(self, obj):
+        statement = f'UPDATE {self.tablename} SET name=? WHERE id=?'
+        self.cursor.execute(statement, (obj.name, obj.id))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbUpdateExeption(e.args)
+
+    def delete(self, obj):
+        statement = f'DELETE FROM {self.tablename} WHERE id=?'
+        self.cursor.execute(statement, (obj.id, ))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbDeleteExeption(e.args)
+
+
+class MapperRegistry:
+    """
+    класс-реестр всех мапперов
+    """
+    mappers = {
+        'buyer': BuyerMapper,
+        # 'category': CategoryMapper
+    }
+
+    @staticmethod
+    def get_mapper(obj):
+        """
+        определяет к какому классу принадлежит объект
+        и соединяет соотв маппер с бд
+        """
+        if isinstance(obj, Buyer):
+            return BuyerMapper(connection)  # соединение маппера с бд
+
+    @staticmethod
+    def get_current_mapper(name):
+        """
+        определяет маппер по ключу
+        из словаря мапперов,
+        и соединяет его с бд
+        """
+        return MapperRegistry.mappers[name](connection)
+
+
+# классы - вывод сообщений при исключениях:
+class DbCommitExeption(Exception):
+    def __init__(self, message):
+        super().__init__(f'Db commit error: {message}')
+
+
+class DbUpdateExeption(Exception):
+    def __init__(self, message):
+        super().__init__(f'Db update error: {message}')
+
+
+class DbDeleteExeption(Exception):
+    def __init__(self, message):
+        super().__init__(f'Db delete error: {message}')
+
+
+class RecordNotFoundExeption(Exception):
+    def __init__(self, message):
+        super().__init__(f'Record not found error: {message}')
+
+
+
