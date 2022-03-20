@@ -9,9 +9,15 @@
     <ul>
         {% for item in objects_list %}
         <li>
-            {{item.name}} <span>Количество товаров:
-            {{item.count_products()}}</span>
+            {{item.name}}
+            <span>Количество товаров: {{item.count_products}}
+            </span>
+            <a href="/product_list/?id={{item.id}}">Показать товары</a>
+            <a href="/create_product/?id={{item.id}}">Создать товары</a>
         </li>
         {% endfor %}
     </ul>
+    <br>
+    <br>
+    <a href="/create_category/">Создать категорию товаров</a>
 {% endblock %}

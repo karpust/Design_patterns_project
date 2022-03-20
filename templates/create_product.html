@@ -11,10 +11,17 @@
     <br>
     <br>
     <div>
-        <h1>Создание нового товара категории "{{name}}"</h1>
+        <h1>Создание нового товара категории "{{category_name}}"</h1>
         <form method="post">
-        <input type="text" name="name" placeholder="Название">
-        <button type="submit">Cохранить</button>
-    </form>
+            <input type="text" name="name" placeholder="Название">
+            <button type="submit">Cохранить</button>
+        </form>
     </div>
+    <br>
+    <br>
+    <a href="/category_list/">К списку категорий</a>
+    <br>
+    <a href="/add_product/">Добавить товар покупателю</a>
+    <br>
+    <a href="/create_buyer/">Создать покупателя</a>
 {% endblock content %}

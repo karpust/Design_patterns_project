@@ -16,9 +16,6 @@
             {% for item in objects_list %}
                 <li>
                     {{item.name}}
-                    {% for product in item.products %}
-                        {{product.name}}
-                    {% endfor %}
                 </li>
             {% endfor %}
         </ul>
@@ -29,7 +26,7 @@
                 <a href="/create_buyer/">Создать покупателя</a>
             </li>
             <li>
-                <a href="/add_buyer/">Добавить покупателя товара</a>
+                <a href="/add_product/">Добавить товар покупателю</a>
             </li>
         </ul>
     </div>

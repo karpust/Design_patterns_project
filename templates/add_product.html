@@ -9,17 +9,17 @@
 {% block content %}
 
     <div>
-        <h1>Добавление покупателя к товару</h1>
+        <h1>Добавление товара покупателю</h1>
     </div>
     <div>
         <form method="post">
-            <select size="10" name="product_name">
-                {% for item in products %}
+            <select size="10" name="buyer_name">
+                {% for item in buyers %}
                     <option value="{{item.name}}">{{item.name}}</option>
                 {% endfor %}
             </select>
-            <select size="10" name="buyer_name">
-                {% for item in buyers %}
+            <select size="10" name="product_name">
+                {% for item in products %}
                     <option value="{{item.name}}">{{item.name}}</option>
                 {% endfor %}
             </select>
@@ -34,7 +34,7 @@
                 <a href="/create_buyer/">Создать покупателя</a>
             </li>
             <li>
-                <a href="/buyers_list/">Список покупателей</a>
+                <a href="/category_list/">Список категорий товаров</a>
             </li>
         </ul>
     </div>

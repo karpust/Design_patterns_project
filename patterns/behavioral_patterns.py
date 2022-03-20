@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 
 
 # поведенческий паттерн - Наблюдатель
-class Subject:  # следим за появлением новых товаров
+class Subject:
     """
     класс-предмет наблюдения
     """
@@ -29,21 +29,21 @@ class Observer(metaclass=ABCMeta):
 class SmsNotifier(Observer):
     """
     класс-уведомитель
-    покупателя смс-сообщением
-    о появлении нового товара
+    смс-сообщением
+    о покупке нового товара
     """
     def update(self, subject):
-        print('SMS: у товара появился новый покупатель', subject.buyers[-1].name)
+        print('SMS: покупатель купил новый товар: ', subject.products[-1].name)
 
 
 class EmailNotifier(Observer):
     """
     класс-уведомитель
-    покупателя email-сообщением
-    о появлении нового товара
+    email-сообщением
+    о покупке нового товара
     """
     def update(self, subject):
-        print('Email: у товара появился новый покупатель', subject.buyers[-1].name)
+        print('Email: покупатель купил новый товар: ', subject.products[-1].name)
 
 
 # поведенческий паттерн Хранитель:
@@ -143,7 +143,6 @@ class CreateView(TemplateView):
         return request['data']
 
     def create_obj(self, data):
-        # при создании переопределим
         pass
 
     def __call__(self, request):

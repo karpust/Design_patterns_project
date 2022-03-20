@@ -1,5 +1,5 @@
 from young_framework.templator import render
-from patterns.creational_patterns import Engine, Logger, MapperRegistry
+from patterns.creational_patterns import Engine, Logger, MapperRegistry, Mapper
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, \
     BaseSerializer, FileWriter, ConsoleWriter, CreateView, TemplateView, \
@@ -62,126 +62,113 @@ class NotFound404:
         return '404 WHAT', '404 Page Not Found'
 
 
-@AppRoute(routes=routes, url='/category_list/')
-class CategoryList:
-    """
-    контроллер - список категорий
-    """
-    def __call__(self, request):
-        logger.log('Список категорий')
-        return '200 OK', render('category_list.html',
-                                objects_list=site.categories,
-                                date=request.get('date', None))
-
-
 @AppRoute(routes=routes, url='/create_category/')
-class CreateCategory:
-    """
-    контроллер - создание категории
-    """
-    def __call__(self, request):
-        if request['method'] == 'POST':
-            data = request['data']
-            name = data['name']
-            name = site.decode_value(name)
-            # category_id = data.get('category_id')
+class CategoryCreateView(CreateView):
+    template_name = 'create_category.html'
 
-            parent_category = None
-            # if category_id:
-            #     site.find_category_id(int(category_id))
+    def create_obj(self, data: dict):
+        name = data['name']
+        name = site.decode_value(name)
+        new_obj = site.create_category(name)
 
-            # если категория с таким именем уже есть, не дублируем:
-            if name in [item.name for item in site.categories]:
-                pass
-            # если нет - создаем новую:
-            else:
-                new_category = site.create_category(name, parent_category)
-                site.categories.append(new_category)
-            return '200 OK', render('index.html',
-                                    objects_list=site.categories,
-                                    date=request.get('date', None))
-
-        else:
-            categories = site.categories
-            return '200 OK', render('create_category.html',
-                                    categories=categories,
-                                    date=request.get('date', None))
+        # внесение в список:
+        site.categories.append(new_obj)
+        # внесение в бд:
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 
-@AppRoute(routes=routes, url='/product_list/')
-class ProductList:
-    def __call__(self, request):
-        logger.log('Список товаров')
-        try:
-            category = site.find_category_id(int(request['request_params']['id']))
-            return '200 OK', render('product_list.html',
-                                    objects_list=category.products,
-                                    name=category.name, id=category.id,
-                                    date=request.get('date', None))
-        except KeyError:
-            return '200 OK', 'No products have been added yet'
+@AppRoute(routes=routes, url='/category_list/')
+class CategoryListView(ListView):
+    template_name = 'category_list.html'
 
+    def get_mapper(self, name):  # ф отправить родителю
+        mapper = MapperRegistry.get_current_mapper(name)
+        return mapper
 
-@AppRoute(routes=routes, url='/create_buyer/')
-class CreateBuyer:
-    """
-    контроллер - создание покупателя
-    """
-    def __call__(self, request):
-        if request['method'] == 'POST':
-            data = request['data']
-            name = data['name']
-            name = site.decode_value(name)
-            new_buyer = site.create_user('buyer', name)
-            site.buyers.append(new_buyer)
+    def get_queryset(self):
+        return self.get_mapper('category').all()
 
 
 @AppRoute(routes=routes, url='/create_product/')
-class CreateProduct:
-    """
-    контроллер - создание продукта
-    """
-    category_id = -1
+class ProductCreateView(CreateView):
+    template_name = 'create_product.html'
+
+    def get_mapper(self, name):  # ф отправить родителю
+        mapper = MapperRegistry.get_current_mapper(name)
+        return mapper
+
+    def get_context_data(self):
+        context = {}
+        category_name = self.get_mapper('product').find_name_by_id(self.category_id)  # получили имя категории по id
+        context['category_name'] = category_name
+        return context
+
+    def create_obj(self, data: dict):
+        name = data['name']
+        name = site.decode_value(name)
+        new_product = site.create_product('begginer', name, self.category_id)
+
+        # внесение в список:
+        site.products.append(new_product)
+        # внесение в бд:
+        new_product.mark_new()
+        UnitOfWork.get_current().commit()
 
     def __call__(self, request):
+        print(f'request = {request}')
         if request['method'] == 'POST':
-            data = request['data']
-            name = data['name']
-            name = site.decode_value(name)
-
-            category = None
-            if self.category_id != -1:
-                category = site.find_category_id(int(self.category_id))
-
-                # если товар с таким именем уже есть, не дублируем:
-                if name in [item.name for item in site.products]:
-                    pass
-                # если нет - создаем:
-                else:
-                    new_product = site.create_product('begginer', name, category)
-
-                    # добавим нотификаторы о покупке товара:
-                    new_product.observers.append(email_notifier)
-                    new_product.observers.append(sms_notifier)
-
-                    site.products.append(new_product)
-            return '200 OK', render('product_list.html',
-                                    objects_list=site.products,
-                                    name=category.name,
-                                    id=category.id,
-                                    date=request.get('date', None))
-
+            data = self.get_request_data(request)
+            self.create_obj(data)
+            return self.render_template_with_context()
         else:
-            try:
-                self.category_id = int(request['request_params']['id'])
-                category = site.find_category_id(int(self.category_id))
+            self.category_id = int(request['request_params']['id'])
+            return super().__call__(request)
 
-                return '200 OK', render('create_product.html',
-                                        name=category.name,
-                                        id=category.id,
-                                        date=request.get('date', None))
-            except KeyError:
-                return '200 OK', 'No categories have been added yet'
+
+@AppRoute(routes=routes, url='/product_list/')
+class ProductsListView(ListView):  # здесь из реквеста нужно достать id категории
+    template_name = 'product_list.html'
+
+    def __call__(self, request):
+        self.category_id = int(request['request_params']['id'])
+        return self.render_template_with_context()
+
+    def get_mapper(self, name):  # ф отправить родителю
+        mapper = MapperRegistry.get_current_mapper(name)
+        return mapper
+
+    def get_queryset(self):
+        mapper = self.get_mapper('product')
+        return mapper.find_by_category_id(self.category_id)  # [(1, 'горные лыжи', 1), (2, 'скоростные лыжи', 1)]
+
+    def get_context_data(self):
+        queryset = self.get_queryset()
+        context_object_name = self.get_context_object_name()
+        context = {context_object_name: queryset}
+        category_name = self.get_mapper('product').find_name_by_id(self.category_id)  # получили имя категории по id
+        context['category_name'] = category_name
+        return context
+
+
+@AppRoute(routes=routes, url='/add_product/')
+class AddProductCreateView(CreateView):  # добавление товара покупателю:
+    template_name = 'add_product.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['products'] = site.products
+        context['buyers'] = site.buyers
+        return context
+
+    def create_obj(self, data: dict):
+        buyer_name = data['buyer_name']
+        buyer_name = site.decode_value(buyer_name)
+        buyer = site.get_buyer(buyer_name)
+        product_name = data['product_name']
+        product_name = site.decode_value(product_name)
+        product = site.get_product(product_name)
+        buyer.add_product(product)
 
 
 @AppRoute(routes=routes, url='/copy_product/')
@@ -204,17 +191,10 @@ class CopyProduct:
 
             return '200 OK', render('product_list.html',
                                     objects_list=site.products,
-                                    name=new_product.category.name,
+                                    name=new_product.name,
                                     date=request.get('date', None))
         except KeyError:
             return '200 OK', 'No products have been added yet'
-
-
-@AppRoute(routes=routes, url='/api/')
-class ProductApi:
-    @Debug(name='ProductApi')
-    def __call__(self, request):
-        return '200 OK', BaseSerializer(site.products).save()
 
 
 @AppRoute(routes=routes, url='/create_buyer/')
@@ -225,15 +205,19 @@ class BuyerCreateView(CreateView):
         name = data['name']
         name = site.decode_value(name)
         new_obj = site.create_user('buyer', name)
+        # добавим нотификаторы о покупках пользователя:
+        new_obj.observers.append(email_notifier)
+        new_obj.observers.append(sms_notifier)
+
+        # внесение в список:
         site.buyers.append(new_obj)
-        # внесение изменений в бд:
+        # внесение в бд:
         new_obj.mark_new()
         UnitOfWork.get_current().commit()
 
 
 @AppRoute(routes=routes, url='/buyers_list/')
 class BuyersListView(ListView):
-    # queryset = site.buyers
     template_name = 'buyers_list.html'
 
     def get_queryset(self):
@@ -241,24 +225,8 @@ class BuyersListView(ListView):
         return mapper.all()
 
 
-@AppRoute(routes=routes, url='/add_buyer/')
-class AddBuyerCreateView(CreateView):
-    template_name = 'add_buyer.html'
-
-    def get_context_data(self):
-        context = super().get_context_data()
-        context['products'] = site.products
-        context['buyers'] = site.buyers
-        return context
-
-    def create_obj(self, data: dict):
-        product_name = data['product_name']
-        product_name = site.decode_value(product_name)
-        product = site.get_product(product_name)
-        buyer_name = data['buyer_name']
-        buyer_name = site.decode_value(buyer_name)
-        buyer = site.get_buyer(buyer_name)
-        product.add_buyer(buyer)
-
-
-
+@AppRoute(routes=routes, url='/api/')
+class ProductApi:
+    @Debug(name='ProductApi')
+    def __call__(self, request):
+        return '200 OK', BaseSerializer(site.products).save()
