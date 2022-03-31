@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  sales_django:
+    build:  # dockerfile is omitted his name by default
+      context: ./step1_sales_django  # path to a directory containing a Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./step1_sales_django/:/my_app/  # подключаем именованные тома по пути
+    ports:
+      - "8000:8000"  # host:container
+
+  orders_flask:
+    build:  # dockerfile is omitted his name by default
+      context: ./step2_orders_flask  # path to a directory containing a Dockerfile
+    depends_on:  # после чего должен запуститься
+      - rabbitmq
+    restart: on-failure
+    environment:
+      - FLASK_APP=main.py
+      - FLASK_RUN_HOST=0.0.0.0
+    command: flask run
+    volumes:
+      - ./step2_orders_flask/:/my_app/  # подключаем именованные тома по пути
+    ports:
+      - "5000:5000"  # host:container
+
+  repair_rabbit:
+    build:
+      context: ./step3_repair_rabbit
+    depends_on: # после чего должен запуститься
+      - rabbitmq
+    restart: on-failure
+    command: python main.py
+    volumes:
+      - ./step3_repair_rabbit/:/my_app/  # подключаем именованные тома по пути
+
+  rabbitmq:
+    image: rabbitmq:3.9-management-alpine
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq/data
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+volumes:
+  rabbitmq:
